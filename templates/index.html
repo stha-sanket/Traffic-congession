@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traffic Detection</title>
+    <style>
+        #videoFeed {
+            width: 80%;
+            border: 2px solid #ccc;
+        }
+        #skeleton {
+            width: 80%;
+            height: 450px;
+            background-color: #f3f3f3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 20px;
+            border: 2px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <h1>Traffic Detection</h1>
+    
+    <!-- Default frame -->
+    <div id="skeleton">
+        Camera is off. Click "Check Traffic Here" to start.
+    </div>
+
+    <div>
+        <button onclick="startCamera()">Check Traffic Here</button>
+        <button onclick="stopCamera()">Stop</button>
+    </div>
+    <br>
+
+    <div>
+        <img id="videoFeed" src="" alt="Video Feed" style="display:none;">
+    </div>
+
+    <h2>Upload a Video for Detection</h2>
+    <!-- Video Upload Form -->
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" id="videoFile" name="file" accept="video/*">
+        <button type="submit">Upload Video</button>
+    </form>
+    <p id="uploadStatus"></p>
+
+    <script>
+        // Function to start camera feed
+        function startCamera() {
+            fetch('/start_video', {method: 'POST'})
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById("videoFeed").src = "/video";
+                        document.getElementById("videoFeed").style.display = 'block';
+                        document.getElementById("skeleton").style.display = 'none';
+                    }
+                });
+        }
+
+        // Function to stop the webcam stream
+        function stopCamera() {
+            fetch('/stop_video', {method: 'POST'})
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById("videoFeed").style.display = 'none';
+                        document.getElementById("skeleton").style.display = 'flex';
+                    }
+                });
+        }
+
+        // Handle video upload
+        document.getElementById('uploadForm').onsubmit = function(event) {
+            event.preventDefault();
+            let formData = new FormData();
+            let videoFile = document.getElementById('videoFile').files[0];
+
+            // Check if the file is selected
+            if (!videoFile) {
+                document.getElementById('uploadStatus').innerText = 'No file selected.';
+                return;
+            }
+
+            formData.append('file', videoFile);
+
+            // Show status message
+            document.getElementById('uploadStatus').innerText = 'Uploading...';
+
+            fetch('/upload_video', {
+                method: 'POST',
+                body: formData
+            }).then(response => response.json())
+              .then(data => {
+                  if (data.success) {
+                      document.getElementById('uploadStatus').innerText = 'Video uploaded successfully. Processing...';
+                  } else {
+                      document.getElementById('uploadStatus').innerText = 'Failed to upload video: ' + data.message;
+                  }
+              }).catch(error => {
+                  document.getElementById('uploadStatus').innerText = 'Error uploading video: ' + error.message;
+              });
+        };
+    </script>
+</body>
+</html>
