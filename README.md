@@ -10,3 +10,12 @@ Key features include:
 - Vehicle Density Detection: IoT sensors monitor real-time traffic density at intersections.
 - Camera-based Vehicle Detection: Utilizing OpenCV, the system detects vehicles via a camera and counts them for additional accuracy.
 - Dynamic Signal Control: Traffic lights are adjusted automatically based on analyzed data to reduce congestion.
+
+------
+
+🌟 Motivation
+
+Urban areas often suffer from traffic congestion due to static traffic light systems. By introducing a dynamic approach, we aim to:
+- Minimize traffic congestion
+- Reduce travel time
+- Optimize road usage
